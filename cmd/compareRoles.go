@@ -29,6 +29,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var differenceComparison bool
+
 // compareRolesCmd represents the compareRoles command
 var compareRolesCmd = &cobra.Command{
 	Use:   "compare",
@@ -45,7 +47,7 @@ to quickly create a Cobra application.`,
 		}
 		role0 := args[0]
 		role1 := args[1]
-		fmt.Println("Comparing roles", role0, role1)
+		fmt.Println("Comparing roles", role0, role1, "Difference is", differenceComparison)
 		ctx := context.Background()
 		svc, err := lib.NewService(ctx)
 		if err != nil {
@@ -71,7 +73,9 @@ to quickly create a Cobra application.`,
 			}
 		}
 		for k, v := range mapCounts {
-			if v > 1 {
+			if !differenceComparison && v > 1 {
+				fmt.Println(k)
+			} else if differenceComparison && v == 1 {
 				fmt.Println(k)
 			}
 		}
@@ -90,4 +94,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// compareRolesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	// difference only shows the differing permissions between the two roles
+	compareRolesCmd.Flags().BoolVarP(&differenceComparison, "difference", "d", false, "Difference between roles")
 }
